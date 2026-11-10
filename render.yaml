@@ -1,0 +1,22 @@
+# Render Blueprint: one web service + one Postgres database.
+# Render dashboard -> New -> Blueprint -> pick this repo -> Apply.
+databases:
+  - name: pakkaquote-db
+    plan: free
+services:
+  - type: web
+    name: pakkaquote
+    runtime: node
+    plan: free            # change to "starter" to stop the 15-minute idle sleep
+    buildCommand: npm install
+    startCommand: npm start
+    healthCheckPath: /healthz
+    envVars:
+      - key: NODE_VERSION
+        value: "22"
+      - key: DATABASE_URL
+        fromDatabase:
+          name: pakkaquote-db
+          property: connectionString
+      - key: SESSION_SECRET
+        generateValue: true
